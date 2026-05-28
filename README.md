@@ -8,13 +8,15 @@ authentication.
 
 ```bash
 brew tap etzhayyim/kotoba
-brew install --HEAD kotoba
+brew install kotoba
 ```
 
-The `--HEAD` flag is required while the formula tracks the upstream `main`
-branch (no tagged release yet). Once `kotoba` cuts its first tag, the
-formula will gain a stable `url` + `sha256` and plain `brew install kotoba`
-will work without the flag.
+To track the upstream `main` branch instead of the latest tagged release,
+add `--HEAD`:
+
+```bash
+brew install --HEAD kotoba
+```
 
 Then:
 
