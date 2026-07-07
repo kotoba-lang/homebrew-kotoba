@@ -1,13 +1,13 @@
 # homebrew-kotoba
 
-Homebrew tap for [`kotoba`](https://github.com/etzhayyim/kotoba) — a
-content-addressed distributed Datalog database with native CACAO
-authentication.
+Homebrew tap for [`kotoba`](https://github.com/kotoba-lang/kotoba) — a
+capability-safe Lisp/EDN language that compiles to WebAssembly, with a
+CLJC/EDN-authoritative CLI launcher.
 
 ## Install
 
 ```bash
-brew tap etzhayyim/kotoba
+brew tap kotoba-lang/kotoba
 brew install kotoba
 ```
 
@@ -21,22 +21,19 @@ brew install --HEAD kotoba
 Then:
 
 ```bash
-kotoba init                                              # one-time identity
-kotoba serve &                                           # IPFS + CACAO default-on
-kotoba demo                                              # smoke test
-kotoba sparql 'ASK { ?s <kg/claim/role> "admin" }'
+kotoba check --kind cli-contract --json     # validate the CLI/package/lock contract
+kotoba did-derive <32-byte-hex-seed>        # → did:key:z…
 ```
 
-See [etzhayyim/kotoba](https://github.com/etzhayyim/kotoba) for the
-full README, SPARQL surface, and performance matrix.
+See [kotoba-lang/kotoba](https://github.com/kotoba-lang/kotoba) for the
+full README and current CLI command surface (versioned in
+[`kotoba-lang/kotoba-lang`'s `lang/cli.edn`](https://github.com/kotoba-lang/kotoba-lang/blob/main/lang/cli.edn)).
 
 ## Requirements
 
-- Rust (auto-installed by `brew install`)
+- Clojure (auto-installed by `brew install`)
 - macOS Command Line Tools (Xcode 26.3 or later)
-- Optional: `ipfs daemon` running on `KOTOBA_IPFS_ENDPOINT` (default
-  `http://localhost:5001`) — set `KOTOBA_IPFS=off` to disable
 
 ## License
 
-Apache-2.0 — see [LICENSE in the kotoba repo](https://github.com/etzhayyim/kotoba/blob/main/LICENSE).
+Apache-2.0 — see [LICENSE in the kotoba repo](https://github.com/kotoba-lang/kotoba/blob/main/LICENSE).
