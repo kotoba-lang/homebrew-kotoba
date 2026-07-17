@@ -30,6 +30,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: Homebrew/actions/setup-homebrew@main
+        if: runner.os == 'Linux'
+
       - name: Install formula as a bottle build
         shell: bash
         run: |
