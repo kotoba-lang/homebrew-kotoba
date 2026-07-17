@@ -76,6 +76,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # `brew bottle` writes local files with a double dash, while its
+          # metadata intentionally advertises the canonical download name
+          # with a single dash. Publish both metadata and canonical archives.
+          for bottle in bottles/*--*.tar.gz; do
+            mv "$bottle" "${bottle/--/-}"
+          done
           gh release create "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
