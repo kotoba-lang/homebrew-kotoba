@@ -1,0 +1,81 @@
+name: Build bottles
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Kotoba version without the v prefix
+        required: true
+        default: "0.6.1"
+
+permissions:
+  contents: write
+
+jobs:
+  bottle:
+    name: Bottle (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS arm64
+            os: macos-15
+          - name: macOS Intel
+            os: macos-15-intel
+          - name: Linux amd64
+            os: ubuntu-24.04
+    runs-on: ${{ matrix.os }}
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install formula as a bottle build
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew tap kotoba-lang/kotoba "$GITHUB_WORKSPACE"
+          brew install --build-bottle kotoba-lang/kotoba/kotoba
+          brew test kotoba-lang/kotoba/kotoba
+
+      - name: Create bottle and metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p bottles
+          cd bottles
+          brew bottle \
+            --json \
+            --root-url="https://github.com/kotoba-lang/homebrew-kotoba/releases/download/kotoba-${{ inputs.version }}" \
+            kotoba-lang/kotoba/kotoba
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bottle-${{ matrix.name }}
+          path: bottles/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish bottle release
+    needs: bottle
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: bottle-*
+          path: bottles
+          merge-multiple: true
+
+      - name: Publish immutable bottle assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: kotoba-${{ inputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Kotoba ${{ inputs.version }} Homebrew bottles" \
+            --notes "Native Homebrew bottles for Kotoba ${{ inputs.version }}. No JVM is included or required." \
+            bottles/*
