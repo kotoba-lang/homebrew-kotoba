@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          brew tap kotoba-lang/kotoba "$GITHUB_WORKSPACE"
+          brew tap kotoba-lang/kotoba
           brew install --build-bottle kotoba-lang/kotoba/kotoba
           brew test kotoba-lang/kotoba/kotoba
 
