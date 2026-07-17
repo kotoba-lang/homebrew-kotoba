@@ -1,32 +1,24 @@
 class Kotoba < Formula
   desc "Capability-safe Kotoba language compiler and CLI"
   homepage "https://github.com/kotoba-lang/kotoba"
-  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.6.3.tar.gz"
-  sha256 "00b82eb5041d492487b273720d77b6dec2590bd73a51be70162ca2bc00e52059"
+  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.6.4.tar.gz"
+  sha256 "ecabc5964f4a1cee521ce453825fa27fab223f02581ae8446550ed618cf27588"
   license "Apache-2.0"
-
-  bottle do
-    root_url "https://github.com/kotoba-lang/homebrew-kotoba/releases/download/kotoba-0.6.3"
-    rebuild 1
-    sha256 cellar: :any_skip_relocation, arm64_sequoia: "0ba121d1183f271bae8782e07e55df723eef877d461bbd742a7ba14bc0b89f70"
-    sha256 cellar: :any_skip_relocation, sequoia:       "4a721c80e29bf3793399f4fdecbc2a8a5995ca7fbff84e853cee28851524bb30"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:  "fdf9b396baf810a9f515a903ce910b4ced0c6a5582decdf5cfefacf9e5e27e0d"
-  end
 
   resource "binary" do
     on_macos do
       on_arm do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.3/kotoba-darwin-arm64.tar.gz"
-        sha256 "8ccdc6020dfe233e696075f77df8c404fab66c99903cf19a5b4572a40775da5a"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.4/kotoba-darwin-arm64.tar.gz"
+        sha256 "ef10de1f25493700f8126ef9be9a69c45feddccee7470fdafb8506f0229dce2a"
       end
       on_intel do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.3/kotoba-darwin-amd64.tar.gz"
-        sha256 "64625ff5fc2d6ca5d5ac4c5aa4939d4eedba0e110acf2e0bc01d940fdda187f0"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.4/kotoba-darwin-amd64.tar.gz"
+        sha256 "7020bc7425b0627a8385fc698c36fd8c5de2b450efa4878c9af12f769c92d70b"
       end
     end
     on_linux do
-      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.3/kotoba-linux-amd64.tar.gz"
-      sha256 "35d15ffd8a9ac5102a828750fb96ee15dcec172aad0d1519894b61a26944b738"
+      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.4/kotoba-linux-amd64.tar.gz"
+      sha256 "1656300de4c57b5b980c5203d625283ab437710cf739a758f1852f8b39659807"
     end
   end
 
@@ -41,20 +33,27 @@ class Kotoba < Formula
     assert_match '"kotoba.cli\\/ok?":true', output
     assert_match '"kotoba.cli\\/code":"valid"', output
 
-    (testpath/"web-smoke.kotoba").write <<~KOTOBA
-      (ns homebrew.web-smoke (:export [add1]))
-      (defn- increment [value] (+ value 1))
-      (defn add1 [value] (increment value))
+    (testpath/"web-string.kotoba").write <<~KOTOBA
+      (ns homebrew.web-string (:export [greet byte-length]))
+      (defn greet [name :string] :string
+        (string-concat "こんにちは、" name))
+      (defn byte-length [value :string] :i64
+        (string-byte-length value))
     KOTOBA
     output = shell_output(
-      "#{bin}/kotoba compile #{testpath}/web-smoke.kotoba " \
-      "--target web -o #{testpath}/web-smoke.mjs --json",
+      "#{bin}/kotoba compile #{testpath}/web-string.kotoba " \
+      "--target web -o #{testpath}/web-string.mjs --json",
     )
     assert_match '"kotoba.cli\\/code":"emitted"', output
-    assert_path_exists testpath/"web-smoke.mjs"
-    generated = (testpath/"web-smoke.mjs").read
+    assert_match '"kotoba.artifact\\/value-profile":"typed-v1"', output
+    assert_path_exists testpath/"web-string.mjs"
+    generated = (testpath/"web-string.mjs").read
     assert_match "entry:null", generated
-    assert_match "Object.freeze({'add1':k$add1})", generated
-    refute_match "'increment':", generated
+    assert_match "valueProfile:'typed-v1'", generated
+    string_limits = "stringLimits:Object.freeze({literalBytes:4096," \
+                    "moduleLiteralBytes:65536,valueBytes:65536})"
+    assert_match string_limits, generated
+    assert_match "こんにちは、", generated
+    assert_match "Object.freeze({'greet':k$greet,'byte-length':k$byte$002dlength})", generated
   end
 end
