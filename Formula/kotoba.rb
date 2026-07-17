@@ -5,6 +5,14 @@ class Kotoba < Formula
   sha256 "73cfdf962207cebcdf8486548a47d02980bd0deaef1c0671f3d9e76922424b52"
   license "Apache-2.0"
 
+  bottle do
+    root_url "https://github.com/kotoba-lang/homebrew-kotoba/releases/download/kotoba-0.6.2"
+    rebuild 1
+    sha256 cellar: :any_skip_relocation, arm64_sequoia: "e764bb66f32015a7c511c32b8556985633c723d8fdae82f36ede03a05f21cdb4"
+    sha256 cellar: :any_skip_relocation, sequoia:       "a5ba39ca55937d057cd3f805ee4799969d1af90ad32c5d1483b1f13aed5638f0"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "d5f44929408c193a77c60163ebced0038bcd55f5519d4a2d724043e8d95e2da5"
+  end
+
   resource "binary" do
     on_macos do
       on_arm do
