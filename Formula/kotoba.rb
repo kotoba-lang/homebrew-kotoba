@@ -187,7 +187,7 @@ class Kotoba < Formula
       "--source-path #{testpath}/typed --target wasm " \
       "--output #{testpath}/typed-app.wasm --json",
     )
-    assert_match '"kotoba.artifact\\/value-profile":"typed-v1"', wasm
+    assert_match '"value-profile":"typed-v1"', wasm
     assert_match '"value-abi":"externref-v1"', wasm
     assert_path_exists testpath/"typed-app.wasm"
   end
