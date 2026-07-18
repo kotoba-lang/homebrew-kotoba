@@ -1,32 +1,24 @@
 class Kotoba < Formula
   desc "Capability-safe Kotoba language compiler and CLI"
   homepage "https://github.com/kotoba-lang/kotoba"
-  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.6.14.tar.gz"
-  sha256 "4a6ff7e98bc6f0a620cebd72406e93affebb269c977fe5cdc0b891f07497aeac"
+  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.6.21.tar.gz"
+  sha256 "48a76ed7a70a5d5257c36dd3db4de32883a046e25d530ce0ca3a7c2ec0a32c58"
   license "Apache-2.0"
-
-  bottle do
-    root_url "https://github.com/kotoba-lang/homebrew-kotoba/releases/download/kotoba-0.6.14"
-    rebuild 1
-    sha256 cellar: :any_skip_relocation, arm64_sequoia: "0560f49aeca4d1138ded135ecc2086e86d583e6699b69eddd6d89eba60fe884e"
-    sha256 cellar: :any_skip_relocation, sequoia:       "0bf6dcefcc4a449ef8dddee3fe33eb32b472afaae2587e8ffb528831bc960b5a"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:  "4d99fbb8a77f734702f848260f66834388f20afba21280507b4b754c4f9a5cc4"
-  end
 
   resource "binary" do
     on_macos do
       on_arm do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.14/kotoba-darwin-arm64.tar.gz"
-        sha256 "399374c2a4fd13f6d206747a76f52843835af3d612310f6654803354f86f5f54"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.21/kotoba-darwin-arm64.tar.gz"
+        sha256 "e9880335781f1590f5b853f0fbc5197ecbf483675fc55084cd27e0a203ac3de7"
       end
       on_intel do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.14/kotoba-darwin-amd64.tar.gz"
-        sha256 "ab303e5a3ec5564cacb50aa2098b22dc9d4ce09032f58469d071cc9384968d85"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.21/kotoba-darwin-amd64.tar.gz"
+        sha256 "490ae96527dc0a0c405b1fda085276c1035e95571e349b5a5cfaa1c637ef742c"
       end
     end
     on_linux do
-      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.14/kotoba-linux-amd64.tar.gz"
-      sha256 "5922756a2d223dc11603228f08468598646cc1b7eac5914bc46f7491a2c034d7"
+      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.21/kotoba-linux-amd64.tar.gz"
+      sha256 "330a1a5e3c19c77a3d33a1853dc60151f76a9953bda35b347c7b658e5142957e"
     end
   end
 
@@ -82,12 +74,46 @@ class Kotoba < Formula
         homebrew.text "text.kotoba"}
        :kotoba.project/package-lock "kotoba.lock.edn"
        :kotoba.project/trust "kotoba.trust.edn"
-       :kotoba.project/dependency-manifests {}}
+       :kotoba.project/dependency-manifests
+       {"kotoba-lang/json" "json.package.edn"}}
     EDN
     (testpath/"kotoba.lock.edn").write <<~EDN
-      {:kotoba.lock/version 1 :deps []}
+      {:kotoba.lock/version 1
+       :deps
+       [{:dep/name "kotoba-lang/json"
+         :dep/version "0.1.0"
+         :dep/repo-rid "bafyreiarfykm5z7sphdaldk27xkdioykfxkyib7iyglqiteaszqlhoka5i"
+         :dep/ref "refs/tags/v0.1.0"
+         :dep/commit "0123456789abcdef0123456789abcdef01234567"
+         :dep/tree-cid "bafyreiawokfmkzvlt3yhwb5qd6widilkuvriucz6kxlrwb2o5whnpkjek4"
+         :dep/manifest-cid "bafyreielazp7f3frjhrgrbhyxffsq7hdkj7msbjqwficmlfftnv5oqf6da"
+         :dep/signers ["did:key:z6MkhFT5VyDsLkruumQGkBb6sMWPGmB9ddsb6hc8AwaxyuQ4"]
+         :dep/capabilities []}]}
     EDN
-    (testpath/"kotoba.trust.edn").write "{}\n"
+    (testpath/"kotoba.trust.edn").write <<~EDN
+      {:declared-capabilities []
+       :trusted-signers
+       #{"did:key:z6MkhFT5VyDsLkruumQGkBb6sMWPGmB9ddsb6hc8AwaxyuQ4"}}
+    EDN
+    (testpath/"json.package.edn").write <<~EDN
+      {:kotoba.package/name "kotoba-lang/json"
+       :kotoba.package/version "0.1.0"
+       :kotoba.package/repo-rid "bafyreiarfykm5z7sphdaldk27xkdioykfxkyib7iyglqiteaszqlhoka5i"
+       :kotoba.package/source
+       {:git-commit "0123456789abcdef0123456789abcdef01234567"
+        :tree-cid "bafyreiawokfmkzvlt3yhwb5qd6widilkuvriucz6kxlrwb2o5whnpkjek4"
+        :manifest-cid "bafyreielazp7f3frjhrgrbhyxffsq7hdkj7msbjqwficmlfftnv5oqf6da"}
+       :kotoba.package/build
+       {:deterministic true
+        :profile-version 1
+        :component-cid "bafyreie5o2doj4tyfq23nc3eqowgdyjlf77g3c4jzl3rbx6tznasoubiw4"}
+       :kotoba.package/capabilities [:graph-read]
+       :kotoba.package/dependencies []
+       :kotoba.package/signatures
+       [{:did "did:key:z6MkhFT5VyDsLkruumQGkBb6sMWPGmB9ddsb6hc8AwaxyuQ4"
+         :alg :ed25519
+         :sig "SKXsX4fGGot2GJmwBYT4xnvYD+G7gdfLBM8wceMZz0JVN7DhdRWyQhR7oYoF+BOIymecQINcLzdBpnjfEI3eCA=="}]}
+    EDN
     output = shell_output(
       "#{bin}/kotoba compile --project #{testpath}/kotoba-project.edn " \
       "--target web -o #{testpath}/app.mjs --json",
