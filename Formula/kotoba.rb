@@ -1,32 +1,24 @@
 class Kotoba < Formula
   desc "Capability-safe Kotoba language compiler and CLI"
   homepage "https://github.com/kotoba-lang/kotoba"
-  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.6.26.tar.gz"
-  sha256 "942c3adc2420a00f154eb08bc988a69326e9eae9adf16893e92a1b2cd6ae60b1"
+  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.6.27.tar.gz"
+  sha256 "77dab7775100a58d3e8299a2215fc5524607c35fea02d952c5e2227ac73fe803"
   license "Apache-2.0"
-
-  bottle do
-    root_url "https://github.com/kotoba-lang/homebrew-kotoba/releases/download/kotoba-0.6.26"
-    rebuild 1
-    sha256 cellar: :any_skip_relocation, arm64_sequoia: "b3081c12ff606b14de543a5178d676112cb447206298ccfedf2f8bb15acac408"
-    sha256 cellar: :any_skip_relocation, sequoia:       "b29e055a450652ab4795021da7535b8bc531f2c9cd3c6bd88e09b6b8f187b2a4"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:  "87932e53358d202af5ce5e4907acc63ae636039b188d09cc9e1f0f7f1250958a"
-  end
 
   resource "binary" do
     on_macos do
       on_arm do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.26/kotoba-darwin-arm64.tar.gz"
-        sha256 "3d9eb436982229e0333f5f09e4ca371e2a80cf6d4abee170fa51ce83eda3bfa2"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.27/kotoba-darwin-arm64.tar.gz"
+        sha256 "7768c0de0a770453282132811015fea68264bf84c3853505699164e4d6a9a086"
       end
       on_intel do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.26/kotoba-darwin-amd64.tar.gz"
-        sha256 "b192f279325a0a1dd7bbd4380410c445fbf9439a6b96902594d6ba76510fb312"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.27/kotoba-darwin-amd64.tar.gz"
+        sha256 "45e06484c4fb4183c9a9ba138ab1dbea2fec32544a77ecd225be04750e830b88"
       end
     end
     on_linux do
-      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.26/kotoba-linux-amd64.tar.gz"
-      sha256 "5596a1de5a0fb8c7ca1409d1c4ffdcbeaa1b3161d3cbb9d360ee1cb4bc76329c"
+      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.27/kotoba-linux-amd64.tar.gz"
+      sha256 "74091a517b8b5871cef723b675c9a34f786c3c1ee7e4c166bde1ead9668c95ef"
     end
   end
 
@@ -169,5 +161,34 @@ class Kotoba < Formula
     assert_match "packageLockDigest:", project_generated
     assert_match "trustPolicyDigest:", project_generated
     assert_match "packageReceiptDigest:", project_generated
+
+    (testpath/"typed/fixture").mkpath
+    (testpath/"typed/fixture/coverage.kotoba").write <<~KOTOBA
+      (ns fixture.coverage (:export [ready?]))
+      (defn ready? [covered [:set :keyword]] :bool
+        (typed-set-contains [:set :keyword] covered :ready))
+    KOTOBA
+    (testpath/"typed/fixture/app.kotoba").write <<~KOTOBA
+      (ns fixture.app
+        (:require [fixture.coverage :as coverage])
+        (:export [main]))
+      (defn main [] :i64
+        (if (coverage/ready? (typed-set [:set :keyword] :ready)) 42 0))
+    KOTOBA
+    web = shell_output(
+      "#{bin}/kotoba compile #{testpath}/typed/fixture/app.kotoba " \
+      "--source-path #{testpath}/typed --target web " \
+      "--output #{testpath}/typed-app.mjs --json",
+    )
+    assert_match '"kotoba.artifact\\/value-profile":"typed-v1"', web
+    assert_match '"kotoba.artifact\\/module-graph-digest"', web
+    wasm = shell_output(
+      "#{bin}/kotoba compile #{testpath}/typed/fixture/app.kotoba " \
+      "--source-path #{testpath}/typed --target wasm " \
+      "--output #{testpath}/typed-app.wasm --json",
+    )
+    assert_match '"kotoba.artifact\\/value-profile":"typed-v1"', wasm
+    assert_match '"value-abi":"externref-v1"', wasm
+    assert_path_exists testpath/"typed-app.wasm"
   end
 end
