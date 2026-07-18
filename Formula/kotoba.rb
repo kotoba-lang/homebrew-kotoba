@@ -1,32 +1,24 @@
 class Kotoba < Formula
   desc "Capability-safe Kotoba language compiler and CLI"
   homepage "https://github.com/kotoba-lang/kotoba"
-  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.6.21.tar.gz"
-  sha256 "48a76ed7a70a5d5257c36dd3db4de32883a046e25d530ce0ca3a7c2ec0a32c58"
+  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.6.22.tar.gz"
+  sha256 "71bf92b90cd10c5bbaa990c992b769351810cc54d29107c1e4811b57f58c31e7"
   license "Apache-2.0"
-
-  bottle do
-    root_url "https://github.com/kotoba-lang/homebrew-kotoba/releases/download/kotoba-0.6.21"
-    rebuild 1
-    sha256 cellar: :any_skip_relocation, arm64_sequoia: "54c07ac7916eb92d04e62d9b5d5e1c7811dfa2335beddc1c29967b432dd89192"
-    sha256 cellar: :any_skip_relocation, sequoia:       "7f8d5f1b35f32e6e68b97cdb18e09b38a7d3f2128f1d88278d788f5e13e00d94"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:  "ea2a3bd0aa582a2174900139f9f09d9ab38b72af313cde7fd40103a59ddf9cc5"
-  end
 
   resource "binary" do
     on_macos do
       on_arm do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.21/kotoba-darwin-arm64.tar.gz"
-        sha256 "e9880335781f1590f5b853f0fbc5197ecbf483675fc55084cd27e0a203ac3de7"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.22/kotoba-darwin-arm64.tar.gz"
+        sha256 "b985d1b81688a113daf134488d5d5904a791cd1f4a107ac9307aa6bd49b82582"
       end
       on_intel do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.21/kotoba-darwin-amd64.tar.gz"
-        sha256 "490ae96527dc0a0c405b1fda085276c1035e95571e349b5a5cfaa1c637ef742c"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.22/kotoba-darwin-amd64.tar.gz"
+        sha256 "1f5ca13d5981cf1b598460a584e093441ddd878280b18c15cda09595d7c94a91"
       end
     end
     on_linux do
-      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.21/kotoba-linux-amd64.tar.gz"
-      sha256 "330a1a5e3c19c77a3d33a1853dc60151f76a9953bda35b347c7b658e5142957e"
+      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.22/kotoba-linux-amd64.tar.gz"
+      sha256 "9d0280e0b8f44eaa0842b749bfa58ffa8d92465bc41d85080de69eaa3c8afdd2"
     end
   end
 
