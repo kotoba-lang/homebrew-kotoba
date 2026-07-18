@@ -1,32 +1,24 @@
 class Kotoba < Formula
   desc "Capability-safe Kotoba language compiler and CLI"
   homepage "https://github.com/kotoba-lang/kotoba"
-  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.6.10.tar.gz"
-  sha256 "a43f9a577aec894f15bf4d39e4d2722aaec77248d618b4a35cfe44a8b1efb93d"
+  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.6.14.tar.gz"
+  sha256 "4a6ff7e98bc6f0a620cebd72406e93affebb269c977fe5cdc0b891f07497aeac"
   license "Apache-2.0"
-
-  bottle do
-    root_url "https://github.com/kotoba-lang/homebrew-kotoba/releases/download/kotoba-0.6.10"
-    rebuild 1
-    sha256 cellar: :any_skip_relocation, arm64_sequoia: "1c276bbb55075b2bcb904f11e6b8cc32fd3d56103123435f64a34a0191e20193"
-    sha256 cellar: :any_skip_relocation, sequoia:       "bfbf3decb0df4c3af88596d7e17bd2a7cf7f5d164d255f0aca61362111e42ec2"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:  "80cb9c291d2fa5f28151cb950ffa076728d9a9e0b54490862ce90f86c03711cc"
-  end
 
   resource "binary" do
     on_macos do
       on_arm do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.10/kotoba-darwin-arm64.tar.gz"
-        sha256 "4127cae2f4f25e8975a1188a03064fe6fbe3c8629172c0265e608e5d73dceb61"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.14/kotoba-darwin-arm64.tar.gz"
+        sha256 "399374c2a4fd13f6d206747a76f52843835af3d612310f6654803354f86f5f54"
       end
       on_intel do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.10/kotoba-darwin-amd64.tar.gz"
-        sha256 "6c1490f7cc902d72983195886bfd84438fea0e2418bdf1c2abe7569d9587cbd1"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.14/kotoba-darwin-amd64.tar.gz"
+        sha256 "ab303e5a3ec5564cacb50aa2098b22dc9d4ce09032f58469d071cc9384968d85"
       end
     end
     on_linux do
-      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.10/kotoba-linux-amd64.tar.gz"
-      sha256 "f5e883c34aecb73202a32c50d65c2becafee46d58eabc830ddd902b7eda1aeda"
+      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.6.14/kotoba-linux-amd64.tar.gz"
+      sha256 "5922756a2d223dc11603228f08468598646cc1b7eac5914bc46f7491a2c034d7"
     end
   end
 
@@ -79,8 +71,15 @@ class Kotoba < Formula
       {:kotoba.project/root homebrew.app
        :kotoba.project/modules
        {homebrew.app "app.kotoba"
-        homebrew.text "text.kotoba"}}
+        homebrew.text "text.kotoba"}
+       :kotoba.project/package-lock "kotoba.lock.edn"
+       :kotoba.project/trust "kotoba.trust.edn"
+       :kotoba.project/dependency-manifests {}}
     EDN
+    (testpath/"kotoba.lock.edn").write <<~EDN
+      {:kotoba.lock/version 1 :deps []}
+    EDN
+    (testpath/"kotoba.trust.edn").write "{}\n"
     output = shell_output(
       "#{bin}/kotoba compile --project #{testpath}/kotoba-project.edn " \
       "--target web -o #{testpath}/app.mjs --json",
@@ -93,5 +92,8 @@ class Kotoba < Formula
     assert_match "Object.freeze({'welcome':k$welcome})", project_generated
     assert_match "moduleGraphDigest:", project_generated
     assert_match "moduleSourceDigests:Object.freeze", project_generated
+    assert_match "packageLockDigest:", project_generated
+    assert_match "trustPolicyDigest:", project_generated
+    assert_match "packageReceiptDigest:", project_generated
   end
 end
