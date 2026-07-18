@@ -90,7 +90,7 @@ class Kotoba < Formula
          :dep/signers ["did:key:z6MkhFT5VyDsLkruumQGkBb6sMWPGmB9ddsb6hc8AwaxyuQ4"]
          :dep/capabilities []}]}
     EDN
-    (testpath/"kotoba.trust.edn").write <<~EDN
+    (testpath/"kotoba.trust.edn").write <<~'EDN'
       {:declared-capabilities []
        :trusted-signers
        #{"did:key:z6MkhFT5VyDsLkruumQGkBb6sMWPGmB9ddsb6hc8AwaxyuQ4"}}
