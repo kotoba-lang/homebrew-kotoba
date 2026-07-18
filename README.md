@@ -11,6 +11,9 @@ brew tap kotoba-lang/kotoba
 brew install kotoba
 ```
 
+The formula tracks the current `v0.5.0` release. `brew upgrade kotoba` updates
+an existing installation after a newer formula is published.
+
 To track the upstream `main` branch instead of the latest tagged release,
 add `--HEAD`:
 
