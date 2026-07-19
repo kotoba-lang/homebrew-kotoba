@@ -164,23 +164,47 @@ class Kotoba < Formula
 
     (testpath/"typed/fixture").mkpath
     (testpath/"typed/fixture/coverage.kotoba").write <<~KOTOBA
-      (ns fixture.coverage (:export [none-report make-report choose-report map-score]))
+      (ns fixture.coverage
+        (:export [ready? make-report none-report choose-report covered-count map-score]))
       (def label-map-type [:map :keyword :string])
+      (defn ready? [covered [:set :keyword]] :bool
+        (typed-set-contains [:set :keyword] covered :ready))
       (defn none-report []
-        [:option [:record :fixture/report [[:value :i64]]]]
-        (option-none-of [:option [:record :fixture/report [[:value :i64]]]]))
-      (defn make-report [] [:record :fixture/report [[:value :i64]]]
-        (record [:record :fixture/report [[:value :i64]]] 40))
+        [:option [:record :fixture/report
+                  [[:label :string] [:covered [:set :keyword]]]]]
+        (option-none-of
+          [:option [:record :fixture/report
+                    [[:label :string] [:covered [:set :keyword]]]]]))
+      (defn make-report []
+        [:record :fixture/report [[:label :string] [:covered [:set :keyword]]]]
+        (record
+          [:record :fixture/report [[:label :string] [:covered [:set :keyword]]]]
+          "qualified" (typed-set [:set :keyword] :ready :reviewed)))
       (defn choose-report
-        [left [:option [:record :fixture/report [[:value :i64]]]]
-         right [:option [:record :fixture/report [[:value :i64]]]]]
-        [:option [:record :fixture/report [[:value :i64]]]]
-        (match-option left [:option [:record :fixture/report [[:value :i64]]]]
+        [left [:option [:record :fixture/report
+                        [[:label :string] [:covered [:set :keyword]]]]]
+         right [:option [:record :fixture/report
+                         [[:label :string] [:covered [:set :keyword]]]]]]
+        [:option [:record :fixture/report
+                  [[:label :string] [:covered [:set :keyword]]]]]
+        (match-option left
+          [:option [:record :fixture/report
+                    [[:label :string] [:covered [:set :keyword]]]]]
           (none right)
           (some left-report
-            (match-option right [:option [:record :fixture/report [[:value :i64]]]]
+            (match-option right
+              [:option [:record :fixture/report
+                        [[:label :string] [:covered [:set :keyword]]]]]
               (none left)
               (some right-report right)))))
+      (defn covered-count
+        [report [:record :fixture/report
+                 [[:label :string] [:covered [:set :keyword]]]]]
+        :i64
+        (typed-set-count [:set :keyword]
+          (record-get
+            [:record :fixture/report [[:label :string] [:covered [:set :keyword]]]]
+            report :covered)))
       (defn map-score [] :i64
         (let [labels (typed-map-assoc label-map-type
                        (typed-map-assoc label-map-type
@@ -209,15 +233,24 @@ class Kotoba < Formula
         (:require [fixture.coverage :as coverage])
         (:export [main]))
       (defn main [] :i64
-        (+ (coverage/map-score)
-          (record-get [:record :fixture/report [[:value :i64]]]
-            (option-value-of [:option [:record :fixture/report [[:value :i64]]]]
-              (coverage/choose-report
-                (coverage/none-report)
-                (option-some-of [:option [:record :fixture/report [[:value :i64]]]]
-                  (coverage/make-report)))
-              (coverage/make-report))
-            :value)))
+        (let [covered (typed-set [:set :keyword] :ready :reviewed)]
+          (if (coverage/ready? covered)
+            (if (string=? "Kotoba" "Kotoba")
+              (+ 38
+                (coverage/map-score)
+                (coverage/covered-count
+                  (option-value-of
+                    [:option [:record :fixture/report
+                              [[:label :string] [:covered [:set :keyword]]]]]
+                    (coverage/choose-report
+                      (coverage/none-report)
+                      (option-some-of
+                        [:option [:record :fixture/report
+                                  [[:label :string] [:covered [:set :keyword]]]]]
+                        (coverage/make-report)))
+                    (coverage/make-report))))
+              1)
+            0)))
     KOTOBA
     web = shell_output(
       "#{bin}/kotoba compile #{testpath}/typed/fixture/app.kotoba " \
