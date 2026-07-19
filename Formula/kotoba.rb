@@ -192,7 +192,7 @@ class Kotoba < Formula
                     (option-value-of [:option :string]
                       (typed-map-get label-map-type labels :reviewed) "no")
                     "yes")
-                (if (option-some? [:option [:vector [:keyword :string]]]
+                (if (option-some?-of [:option [:vector [:keyword :string]]]
                       (typed-map-entry-at label-map-type labels 0))
                   2
                   0)
