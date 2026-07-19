@@ -185,15 +185,19 @@ class Kotoba < Formula
         (let [labels (typed-map-assoc label-map-type
                        (typed-map-assoc label-map-type
                          (typed-map-new label-map-type) :ready "yes")
-                       :reviewed "yes")]
+                       :reviewed "yes")
+              first-entry (option-value-of
+                            [:option [:vector [:keyword :string]]]
+                            (typed-map-entry-at label-map-type labels 0)
+                            (hetero-vector [:vector [:keyword :string]] :missing "no"))]
           (if (= (typed-map-count label-map-type labels) 2)
             (if (typed-map-contains label-map-type labels :ready)
               (if (string=?
                     (option-value-of [:option :string]
                       (typed-map-get label-map-type labels :reviewed) "no")
                     "yes")
-                (if (option-some?-of [:option [:vector [:keyword :string]]]
-                      (typed-map-entry-at label-map-type labels 0))
+                (if (= (hetero-vector-count
+                         [:vector [:keyword :string]] first-entry) 2)
                   2
                   0)
                 0)
