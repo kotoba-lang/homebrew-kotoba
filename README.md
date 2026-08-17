@@ -7,8 +7,13 @@ capability-safe language that compiles to WebAssembly or restricted ESM.
 
 ```bash
 brew tap kotoba-lang/kotoba
+brew trust kotoba-lang/kotoba
 brew install kotoba
 ```
+
+Homebrew 6 will not load a formula from a tap it has not been told to trust;
+without the middle line the install stops with `Refusing to load formula …
+from untrusted tap`.
 
 Then:
 
