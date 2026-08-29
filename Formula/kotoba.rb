@@ -1,24 +1,24 @@
 class Kotoba < Formula
   desc "Capability-safe Kotoba language compiler and CLI"
   homepage "https://github.com/kotoba-lang/kotoba"
-  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.7.1.tar.gz"
-  sha256 "3b62d2f11b86e5414d80b04a0c7288b91ee45e51d19c65d8583f3f9da09335f1"
+  url "https://github.com/kotoba-lang/kotoba/archive/refs/tags/v0.7.3.tar.gz"
+  sha256 "2ca97dd427754e0472c8efe02cd8f1c090811a3111bfa8afe6354bd497186a22"
   license "Apache-2.0"
 
   resource "binary" do
     on_macos do
       on_arm do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.7.1/kotoba-darwin-arm64.tar.gz"
-        sha256 "1049af96f22412d275819efde64f16f05ebca08497e1bb287afcec43c633e51f"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.7.3/kotoba-darwin-arm64.tar.gz"
+        sha256 "5ba2cdf04278e603cc89d7e7e581879664a2adcadbc66d65ae62beaa91ab4cd4"
       end
       on_intel do
-        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.7.1/kotoba-darwin-amd64.tar.gz"
-        sha256 "73df2a4dd7e09ef3c8554053000b52c857c1e5ca9608a003805cd511502dac0b"
+        url "https://github.com/kotoba-lang/kotoba/releases/download/v0.7.3/kotoba-darwin-amd64.tar.gz"
+        sha256 "3fc5ffbb76458ae0c833500ca71e4bf8e0837d4a229ecc402882cf3596a63f1f"
       end
     end
     on_linux do
-      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.7.1/kotoba-linux-amd64.tar.gz"
-      sha256 "5202e2f401f240d128731eb781aeef7015c63d8a5a23ff5ea92079a85573fabf"
+      url "https://github.com/kotoba-lang/kotoba/releases/download/v0.7.3/kotoba-linux-amd64.tar.gz"
+      sha256 "6b14c81619cf019feed5ca8a295fb27db34883bbaca4a547e98a3db398e2e058"
     end
   end
 
@@ -81,7 +81,7 @@ class Kotoba < Formula
     CLJC
     output = shell_output(
       "#{bin}/kotoba compile #{testpath}/main.cljc " \
-      "--source-path #{testpath}/src --target web " \
+      "--source-path #{testpath}/src --unpinned --target web " \
       "--output #{testpath}/shared-app.mjs --json",
     )
     assert_match '"kotoba.cli\\/code":"emitted"', output
@@ -254,14 +254,14 @@ class Kotoba < Formula
     KOTOBA
     web = shell_output(
       "#{bin}/kotoba compile #{testpath}/typed/fixture/app.kotoba " \
-      "--source-path #{testpath}/typed --target web " \
+      "--source-path #{testpath}/typed --unpinned --target web " \
       "--output #{testpath}/typed-app.mjs --json",
     )
     assert_match '"kotoba.artifact\\/value-profile":"typed-v1"', web
     assert_match '"kotoba.artifact\\/module-graph-digest"', web
     wasm = shell_output(
       "#{bin}/kotoba compile #{testpath}/typed/fixture/app.kotoba " \
-      "--source-path #{testpath}/typed --target wasm " \
+      "--source-path #{testpath}/typed --unpinned --target wasm " \
       "--output #{testpath}/typed-app.wasm --json",
     )
     assert_match '"value-profile":"typed-v1"', wasm
