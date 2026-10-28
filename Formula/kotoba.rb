@@ -5,6 +5,10 @@ class Kotoba < Formula
   sha256 "2ca97dd427754e0472c8efe02cd8f1c090811a3111bfa8afe6354bd497186a22"
   license "Apache-2.0"
 
+  on_linux do
+    depends_on arch: :x86_64
+  end
+
   resource "binary" do
     on_macos do
       on_arm do
